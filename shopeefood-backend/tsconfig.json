@@ -1,0 +1,20 @@
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "module": "CommonJS",
+
+    "rootDir": "./src",
+    "outDir": "./dist",
+
+    "types": ["node"],
+    "strict": true,
+
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true,
+    "typeRoots": ["./node_modules/@types", "./src/types"] // Thêm dòng này để chắc chắn nó quét thư mục types
+  },
+  "include": ["src/**/*"] // Đảm bảo dòng này có
+}
