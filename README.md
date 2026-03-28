@@ -47,6 +47,13 @@ npm install
 npx expo start
 \`\`\`
 
+### 2. Customer App
+\`\`\`bash
+cd shoppefood-cms
+npm install
+npm run dev
+\`\`\`
+
 ## 📝 Kế hoạch phát triển (To-do List)
 - [x] Hoàn thiện luồng Đặt hàng (Checkout Flow).
 - [ ] Tích hợp thanh toán qua ví điện tử (ZaloPay/MoMo).
