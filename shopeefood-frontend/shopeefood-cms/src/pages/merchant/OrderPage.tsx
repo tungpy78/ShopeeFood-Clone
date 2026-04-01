@@ -5,6 +5,7 @@ import { orderService } from '../../services/order.service';
 import type { Order } from '../../types/order.type';
 import type { AxiosError } from 'axios';
 import type { ApiErrorResponse } from '../../types/api.type';
+import { useSocket } from '../../context/SocketContext';
 
 
 const { Text } = Typography;
@@ -12,6 +13,8 @@ const { Text } = Typography;
 const OrderPage = () => {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(false);
+
+  const { newOrderTrigger } = useSocket();
 
   // 1. Lấy TẤT CẢ đơn hàng khi vào trang
   const fetchOrders = async () => {
@@ -30,8 +33,7 @@ const OrderPage = () => {
 
   useEffect(() => {
     fetchOrders();
-    // Thực tế đi làm, chỗ này người ta sẽ gắn Socket.IO để đơn tự nhảy vào mà không cần F5
-  }, []);
+  }, [newOrderTrigger]);
 
   // 2. Hàm gọi API Cập nhật trạng thái
   const handleUpdateStatus = async (orderId: number, newStatus: string) => {

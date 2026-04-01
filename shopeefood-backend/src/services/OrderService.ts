@@ -4,6 +4,7 @@
     import ApiError from "../utils/ErrorClass";
     import { OptionDTO } from "../interfaces/option.interface";
 import { sequelize } from "../config/connectDB";
+import { socketService } from "../config/socket";
 
 
     class OrderService {
@@ -128,6 +129,26 @@ import { sequelize } from "../config/connectDB";
 
                 
                 await t?.commit();
+
+                try {
+                    const io = socketService.getIO();
+
+                    // Tạo tên phòng riêng cho quán này (Ví dụ: "merchant_12")
+                    const merchantRoom = `merchant_${merchant.account_id}`;
+
+                    // Phát sự kiện 'new_order' vào đúng phòng của quán đó
+                    // Đính kèm luôn dữ liệu đơn hàng để màn hình Merchant hiển thị ngay
+                    io.to(merchantRoom).emit('new_order', {
+                        message: 'Bạn có một đơn hàng mới!',
+                        orderId: newOrder.id,
+                        // Có thể query lại đơn hàng đầy đủ (kèm items, customer) để gửi luôn nếu muốn
+                    });
+                    console.log(`Đã phát tín hiệu đơn mới tới phòng: ${merchantRoom}`);
+
+                } catch (socketError) {
+                    // Nếu lỗi Socket thì log ra thôi, không throw error làm hỏng giao dịch mua hàng của khách
+                    console.error("Lỗi khi gửi socket:", socketError);
+                }
 
                 return newOrder;
 

@@ -34,7 +34,7 @@ Mục tiêu của dự án là giải quyết các bài toán logic thực tế 
 
 ### 1. Backend
 \`\`\`bash
-cd backend
+cd shoppefood-backend
 npm install
 # Tạo file .env và cấu hình Database (DB_HOST, DB_USER, DB_PASS, JWT_SECRET)
 npm run dev

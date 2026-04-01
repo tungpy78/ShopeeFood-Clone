@@ -3,9 +3,12 @@ import App from './App.tsx'
 import "leaflet/dist/leaflet.css";
 import { BrowserRouter } from 'react-router-dom'
 import './index.css'
+import { SocketProvider } from './context/SocketContext.tsx';
 
 createRoot(document.getElementById('root')!).render(
   <BrowserRouter>
-    <App />
+    <SocketProvider>
+      <App />
+    </SocketProvider>
   </BrowserRouter>
 )

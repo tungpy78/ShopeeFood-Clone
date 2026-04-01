@@ -44,7 +44,9 @@ class AuthService {
         const existingAccount = await Account.findOne(
             {
                 where:{phone: data.phone},
-                include: [{model: Role, as: 'role'}] //lấy luôn thông tin role
+                include: [
+                    {model: Role, as: 'role'},
+                ], //lấy luôn thông tin role
             }
         );
         if(!existingAccount){
@@ -69,7 +71,7 @@ class AuthService {
             user:{
                 id: existingAccount.id,
                 phone: existingAccount.phone,
-                role: existingAccount.role_id
+                role: existingAccount.role_id,
             }
         };
     }
