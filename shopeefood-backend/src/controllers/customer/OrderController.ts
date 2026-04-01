@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
-import OrderService from '../services/OrderService';
-import AppResponse from '../utils/AppResponse';
+import AppResponse from '../../utils/AppResponse';
+import OrderService from '../../services/customer/OrderService';
 
 export const placeOrder = async (req: Request, res: Response, next: NextFunction) => {
   try {

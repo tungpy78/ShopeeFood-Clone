@@ -1,8 +1,8 @@
 import { Request, Response, NextFunction } from 'express';
-import { MerChantDTO } from "../interfaces/merchant.interface";
-import MerchantService from '../services/MerchantService';
-import AppResponse from '../utils/AppResponse';
-import { socketService } from '../config/socket';
+import AppResponse from '../../utils/AppResponse';
+import { MerChantDTO } from '../../interfaces/merchant.interface';
+import MerchantService from '../../services/merchant/MerchantService';
+import { socketService } from '../../config/socket';
 
 export const createMerchantProfile = async (req: Request, res: Response, next: NextFunction) => {
     try {

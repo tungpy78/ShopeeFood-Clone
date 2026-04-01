@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
-import AdminService from '../services/AdminService';
-import AppResponse from '../utils/AppResponse';
+import AdminService from '../../services/admin/AdminService';
+import AppResponse from '../../utils/AppResponse';
+
 
 export const getPendingMerchants = async (req: Request, res: Response, next: NextFunction) => {
     try {

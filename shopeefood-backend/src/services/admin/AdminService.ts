@@ -1,5 +1,6 @@
-import { Merchant } from "../models";
-import ApiError from "../utils/ErrorClass";
+import { Merchant } from "../../models";
+import ApiError from "../../utils/ErrorClass";
+
 
 class AdminService{
     static async getPendingMerchants(){

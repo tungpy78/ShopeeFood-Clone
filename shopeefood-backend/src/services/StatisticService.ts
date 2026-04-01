@@ -1,5 +1,4 @@
 import { col, fn, literal, Op } from "sequelize";
-import { MerChantDTO } from "../interfaces/merchant.interface";
 import { Account, Driver, Food, Merchant, Order, OrderDetail } from "../models";
 import ApiError from "../utils/ErrorClass";
 

@@ -1,10 +1,10 @@
-    import { Model } from "sequelize";
-    import { OrderDTO } from "../interfaces/order.interface";
-    import { Category, Food, Merchant, Option, OptionGroup, Order, OrderDetail } from "../models";
-    import ApiError from "../utils/ErrorClass";
-    import { OptionDTO } from "../interfaces/option.interface";
-import { sequelize } from "../config/connectDB";
-import { socketService } from "../config/socket";
+import { Model } from "sequelize";
+import { OrderDTO } from "../../interfaces/order.interface";
+import { Category, Food, Merchant, Option, OptionGroup, Order, OrderDetail } from "../../models";
+import ApiError from "../../utils/ErrorClass";
+import { OptionDTO } from "../../interfaces/option.interface";
+import { sequelize } from "../../config/connectDB";
+import { socketService } from "../../config/socket";
 
 
     class OrderService {

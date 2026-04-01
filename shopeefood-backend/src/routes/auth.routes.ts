@@ -1,86 +1,34 @@
 import { Router } from 'express';
-import { login, register } from '../controllers/AuthController'; // Import Controller (Lễ tân)
 import validate from '../middlewares/validateMiddleware';
-import { loginSchema, registerSchema } from '../validations/authValidation';
+import { customerDriverRegisterSchema, loginSchema, merchantRegisterSchema } from '../validations/authValidation';
+import { customerLogin, customerRegister } from '../controllers/customer/AuthController';
+import { merchantLogin, merchantRegister } from '../controllers/merchant/AuthController';
+import { driverLogin, driverRegister } from '../controllers/driver/AuthController';
+import { adminLogin } from '../controllers/admin/AuthController';
 
 const authRouter = Router();
 
-/**
- * @swagger
- * tags:
- *   name: Auth
- *   description: API Đăng ký và Đăng nhập
- */
+// ==========================================
+// 1. AUTH DÀNH CHO KHÁCH HÀNG (Customer App)
+// ==========================================
+authRouter.post('/customer/register', validate(customerDriverRegisterSchema), customerRegister);
+authRouter.post('/customer/login', validate(loginSchema), customerLogin);
 
-/**
- * @swagger
- * /auth/register:
- *   post:
- *     summary: Đăng ký tài khoản mới
- *     tags: [Auth]
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required:
- *               - phone
- *               - password
- *               - full_name
- *               - role_id
- *             properties:
- *               phone:
- *                 type: string
- *                 example: "0909123456"
- *               password:
- *                 type: string
- *                 example: "123456"
- *               full_name:
- *                 type: string
- *                 example: "Nguyễn Văn A"
- *               role_id:
- *                 type: integer
- *                 example: 2
- *                 description: "1: Merchant, 2: Customer, 3: Driver"
- *     responses:
- *       201:
- *         description: Đăng ký thành công
- *       400:
- *         description: Lỗi Validation
- */
-authRouter.post('/register',validate(registerSchema) ,register);
+// ==========================================
+// 2. AUTH DÀNH CHO CHỦ QUÁN (Merchant Web)
+// ==========================================
+authRouter.post('/merchant/register', validate(merchantRegisterSchema), merchantRegister);
+authRouter.post('/merchant/login', validate(loginSchema), merchantLogin);
 
-authRouter.post('/login', validate(loginSchema), login);
-/**
- * @swagger
- * /auth/login:
- *   post:
- *     summary: Đăng nhập hệ thống
- *     tags: [Auth]
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required:
- *               - phone
- *               - password
- *             properties:
- *               phone:
- *                 type: string
- *                 example: "0999999999"
- *               password:
- *                 type: string
- *                 example: "123456"
- *     responses:
- *       200:
- *         description: Đăng nhập thành công, trả về Token
- *       401:
- *         description: Sai mật khẩu hoặc tài khoản
- */
+// ==========================================
+// 3. AUTH DÀNH CHO TÀI XẾ (Driver App)
+// ==========================================
+authRouter.post('/driver/register', validate(customerDriverRegisterSchema), driverRegister);
+authRouter.post('/driver/login', validate(loginSchema), driverLogin);
 
-
+// ==========================================
+// 4. AUTH DÀNH CHO ADMIN (Admin Dashboard)
+// ==========================================
+authRouter.post('/admin/login', validate(loginSchema), adminLogin);
 
 export default authRouter;

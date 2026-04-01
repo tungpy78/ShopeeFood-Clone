@@ -1,9 +1,9 @@
 import { or } from "sequelize";
-import { FoodDTO } from "../interfaces/food.interface";
-import { MerChantDTO } from "../interfaces/merchant.interface";
-import { Account, Category, Customer, Food, FoodOptionGroup, Merchant, Option, OptionGroup, Order, OrderDetail } from "../models";
-import ApiError from "../utils/ErrorClass";
-import { sequelize } from "../config/connectDB";
+import { FoodDTO } from "../../interfaces/food.interface";
+import { MerChantDTO } from "../../interfaces/merchant.interface";
+import { Account, Category, Customer, Food, FoodOptionGroup, Merchant, Option, OptionGroup, Order, OrderDetail } from "../../models";
+import ApiError from "../../utils/ErrorClass";
+import { sequelize } from "../../config/connectDB";
 
 class MerchantService{
     static async createMerchant(accountId: number, data: MerChantDTO){

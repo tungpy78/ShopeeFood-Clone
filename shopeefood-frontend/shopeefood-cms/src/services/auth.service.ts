@@ -5,11 +5,11 @@ import type { ApiResponse } from '../types/api.type';
 
 export const authService = {
   login: (data: LoginRequest)  => {
-    return axiosClient.post<any, ApiResponse<AuthData>>('/auth/login', data);
+    return axiosClient.post<any, ApiResponse<AuthData>>('/auth/merchant/login', data);
   },
 
   register: (data: RegisterRequest)  => {
-    return axiosClient.post<any, ApiResponse<AuthData>>('/auth/register', data);
+    return axiosClient.post<any, ApiResponse<AuthData>>('/auth/merchant/register', data);
   },
 
   getProfile: () => {
@@ -18,6 +18,6 @@ export const authService = {
   
   // Sau này backend làm đổi pass thì thêm vào đây
   changePassword: (data: any) => {
-    return axiosClient.patch<any, ApiResponse<null>>('/auth/change-password', data);
+    return axiosClient.patch<any, ApiResponse<null>>('/auth/merchant/change-password', data);
   }
 };

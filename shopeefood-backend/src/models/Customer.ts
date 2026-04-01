@@ -6,6 +6,7 @@ class Customer extends Model {
   declare full_name: string;
   declare email: string;
   declare avatar: string;
+  
 }
 
 Customer.init({

@@ -5,10 +5,10 @@ import axiosClient from './axiosClient';
 export const customerService = {
   // Hàm lấy danh sách Quán ăn đang mở cửa
   getMerchants: () => {
-    return axiosClient.get<any, ApiResponse<Merchant[]>>('/customers/merchants'); 
+    return axiosClient.get<any, ApiResponse<Merchant[]>>('/public/merchants'); 
   },
 
   getMerchantMenu: (merchantId: number ) => {
-    return axiosClient.get<any, ApiResponse<Merchant>>(`/merchants/${merchantId}`);
+    return axiosClient.get<any, ApiResponse<Merchant>>(`/public/merchants/${merchantId}`);
   }
 };

@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
-import OptionGroupService from "../services/OptionGroupService";
-import AppResponse from "../utils/AppResponse";
+import OptionGroupService from "../../services/merchant/OptionGroupService";
+import AppResponse from "../../utils/AppResponse";
 
 export const createOption = async (req: Request, res: Response, next: NextFunction) => {
     try {

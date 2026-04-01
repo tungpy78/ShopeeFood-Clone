@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
-import CustomerService from '../services/CustomerService';
-import AppResponse from '../utils/AppResponse';
+import CustomerService from '../../services/customer/CustomerService';
+import AppResponse from '../../utils/AppResponse';
 
 export const getMerchant = async (req: Request, res: Response, next: NextFunction) => {
     try {

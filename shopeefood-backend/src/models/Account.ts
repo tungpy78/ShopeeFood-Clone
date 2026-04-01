@@ -1,5 +1,6 @@
 import { DataTypes, Model } from 'sequelize';
 import { sequelize } from '../config/connectDB';
+import Customer from './Customer';
 
 class Account extends Model {
   declare id: number;
@@ -7,6 +8,8 @@ class Account extends Model {
   declare password: string;
   declare role_id: number;
   declare status: boolean;
+
+  declare customer_profile?: Customer;
 }
 
 Account.init({

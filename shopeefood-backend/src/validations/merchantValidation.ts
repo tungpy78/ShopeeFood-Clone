@@ -1,5 +1,4 @@
 import Joi from 'joi';
-import { addCategory } from '../controllers/MerchantController';
 
 export const createMerchantSchema = Joi.object({
   name: Joi.string().required().messages({ 'any.required': 'Tên quán không được để trống' }),

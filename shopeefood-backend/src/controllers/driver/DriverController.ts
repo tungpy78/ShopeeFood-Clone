@@ -1,7 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
-import DriverService from '../services/DriverService';
-import AppResponse from '../utils/AppResponse';
-
+import AppResponse from '../../utils/AppResponse';
+import DriverService from '../../services/driver/DriverService';
 export const getAvailableOrders = async (req: Request, res: Response, next: NextFunction) => {
     try {
         if (!req.user) return AppResponse.error(res, 'Unauthorized', 401);

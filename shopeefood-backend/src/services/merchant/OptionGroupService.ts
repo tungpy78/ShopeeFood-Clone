@@ -1,7 +1,6 @@
-import { sequelize } from "../config/connectDB";
-import { FoodOptionGroup, Merchant, Option, OptionGroup } from "../models";
-import ApiError from "../utils/ErrorClass";
-import MerchantService from "./MerchantService";
+import { sequelize } from "../../config/connectDB";
+import { FoodOptionGroup, Merchant, Option, OptionGroup } from "../../models";
+import ApiError from "../../utils/ErrorClass";
 
 class OptionGroupService{
     static async createOption(merchantId: number,groupId: number, option:Option[]){

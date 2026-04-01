@@ -1,5 +1,6 @@
 export interface User {
     id: number;
+    full_name:string;
     phone: string;
     role: number;    
 }

@@ -109,7 +109,7 @@ export default function CheckoutScreen() {
             </View>
             <View style={styles.inputGroup}>
               <Ionicons name="person" size={20} color={COLORS.textLight} style={styles.icon}/>
-              <Text style={{ color: COLORS.text }}>{user?.phone}</Text>
+              <Text style={{ color: COLORS.text }}>{user?.full_name} - {user?.phone}</Text>
             </View>
           </View>
 

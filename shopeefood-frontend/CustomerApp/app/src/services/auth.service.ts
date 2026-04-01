@@ -4,7 +4,7 @@ import axiosClient from "./axiosClient"
 
 export const AuthService = {
     login:(phone: string, password: string) => {
-        return axiosClient.post<any, ApiResponse<UserDTO>>('auth/login',
+        return axiosClient.post<any, ApiResponse<UserDTO>>('auth/customer/login',
             {
                 phone,
                 password

@@ -1,6 +1,7 @@
-import { sequelize } from "../config/connectDB";
-import { Account, Category, Customer, Driver, Food, Merchant, Order, OrderDetail } from "../models";
-import ApiError from "../utils/ErrorClass";
+import { sequelize } from "../../config/connectDB";
+import { Account, Category, Customer, Driver, Food, Merchant, Order, OrderDetail } from "../../models";
+import ApiError from "../../utils/ErrorClass";
+
 
 class DriverService{
     static async getAvailableOrders(driverId: number){
