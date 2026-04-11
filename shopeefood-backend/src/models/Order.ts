@@ -12,6 +12,9 @@ class Order extends Model{
     declare shipping_address: string;
     declare payment_method: string;
     declare status: string;
+
+    public merchant_info?: any;
+    public customer_info?: any;
 }
 Order.init({
     id:{

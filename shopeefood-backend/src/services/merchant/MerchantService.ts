@@ -4,6 +4,7 @@ import { MerChantDTO } from "../../interfaces/merchant.interface";
 import { Account, Category, Customer, Food, FoodOptionGroup, Merchant, Option, OptionGroup, Order, OrderDetail } from "../../models";
 import ApiError from "../../utils/ErrorClass";
 import { sequelize } from "../../config/connectDB";
+import { socketService } from "../../config/socket";
 
 class MerchantService{
     static async createMerchant(accountId: number, data: MerChantDTO){
@@ -458,11 +459,26 @@ class MerchantService{
             where:{
                 id: orderId,
                 merchant_id: merchant.account_id
-            }
+            },
+            include:[
+                {
+                    model: Merchant,
+                    as: 'merchant_info',
+                    attributes:["name", "address"]
+                },
+                {
+                    model: Customer,
+                    as: 'customer_info',
+                    attributes:["full_name"]
+                }
+            ]
         })
         if(!order){
             throw new ApiError('Đơn hàng không tồn tại hoặc không thuộc quán của bạn', 404);
         }
+
+        const orderData = order.get({ plain: true });
+
         // --- 3. LOGIC CHẶN TRẠNG THÁI (STATE MACHINE) ---
         
         // Định nghĩa bản đồ: [Trạng thái hiện tại]: [Các trạng thái được phép nhảy tới]
@@ -492,6 +508,42 @@ class MerchantService{
         // 4. Nếu hợp lệ thì cập nhật
         order.status = newStatus;
         await order.save();
+
+        // 5. BẮN SOCKET THÔNG BÁO TẠI ĐÂY (Sau khi lưu DB thành công)
+        try {
+            const io = socketService.getIO();
+
+            // TRƯỜNG HỢP A: Báo cho Tài xế
+            if (newStatus === 'FINDING_DRIVER') {
+                io.to('drivers_room').emit('job_available', {
+                    message: '📢 Có đơn hàng mới cần giao!',
+                    id: order.id, 
+                    merchant_info: { 
+                        name: orderData.merchant_info?.name, 
+                        address: orderData.merchant_info?.address
+                    },
+                    customer_info: { 
+                        name: orderData.customer_info?.full_name, 
+                        address: orderData.shipping_address
+                    },
+                    earnings: '15.000đ'
+                });
+                console.log("⚡ Đã bắn tin cho hội tài xế!");
+            }
+
+            // TRƯỜNG HỢP B: Báo cho Khách hàng
+            const customerRoom = `customer_${order.customer_id}`;
+            io.to(customerRoom).emit('order_status_update', {
+                message: `Đơn hàng #${order.id} đã chuyển sang: ${newStatus}`,
+                status: newStatus,
+                order: order
+            });
+            console.log(`Đã bắn thông báo tiến độ cho khách: ${customerRoom}`);
+            
+        } catch (socketError) {
+            // Lỗi socket thì log ra thôi, không throw lỗi để tránh hỏng cả transaction chính
+            console.error("Lỗi khi gửi socket trong Service:", socketError);
+        }
 
         return order;
     }

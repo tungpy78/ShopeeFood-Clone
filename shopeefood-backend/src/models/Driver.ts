@@ -10,6 +10,12 @@ class Driver extends Model {
   declare current_long: number;
   declare wallet_balance: number;// Tiền cọc trong ví
   declare status: string;
+
+  // --- THÊM 3 TRƯỜNG MỚI ---
+  declare avatar: string;
+  declare id_card: string;
+  declare date_of_birth: Date;
+
 }
 
 Driver.init({
@@ -21,12 +27,26 @@ Driver.init({
   // --- THÊM CỘT NÀY ---
   full_name: {
     type: DataTypes.STRING,
-    allowNull: false
+    allowNull: true
   },
   vehicle_plate: {
     type: DataTypes.STRING,
-    allowNull: false
+    allowNull: true
   },
+
+  avatar: {
+    type: DataTypes.STRING, // Lưu URL ảnh từ Cloudinary
+    allowNull: true
+  },
+  id_card: {
+    type: DataTypes.STRING(20), // CCCD thường 12 số
+    allowNull: true
+  },
+  date_of_birth: {
+    type: DataTypes.DATEONLY, // Chỉ lưu Ngày/Tháng/Năm
+    allowNull: true
+  },
+
   is_online: {
     type: DataTypes.BOOLEAN,
     defaultValue: false // Mặc định offline
@@ -44,8 +64,8 @@ Driver.init({
     defaultValue: 0
   },
   status: {
-    type: DataTypes.ENUM('ACTIVE', 'BANNED', 'PENDING_APPROVAL'),
-    defaultValue: 'ACTIVE'
+    type: DataTypes.ENUM('ACTIVE', 'BANNED', 'PENDING_APPROVAL', 'INCOMPLETE'),
+    defaultValue: 'INCOMPLETE' // 👈 Vừa tạo Account thì trạng thái là CHƯA HOÀN THÀNH
   }
 }, {
   sequelize,

@@ -1,15 +1,21 @@
 import { Router } from 'express';
-import { acceptOrder, completeOrder, getAvailableOrders } from '../controllers/driver/DriverController';
+import { acceptOrder, completeOrder, getActiveOrder, getAvailableOrders, getDriverProfile, getDriverStats, setupProfile, toggleStatus, updateOrderStatus } from '../controllers/driver/DriverController';
 
 const driverRouter = Router();
 
-// GET /api/v1/driver/orders/available -> Lấy đơn đang tìm tài xế
+// --- 1. PROFILE & TRẠNG THÁI ---
+driverRouter.get('/profile', getDriverProfile);
+driverRouter.post('/profile', setupProfile)
+driverRouter.patch('/status', toggleStatus);
+
+// --- 2. ĐƠN HÀNG ---
 driverRouter.get('/orders/available', getAvailableOrders);
-
-// PATCH /api/v1/driver/orders/:orderId/accept -> Bấm nhận đơn
+driverRouter.get('/orders/active', getActiveOrder); // Đơn đang giao
 driverRouter.patch('/orders/:orderId/accept', acceptOrder);
-
-// PATCH /api/v1/driver/orders/:orderId/complete -> Giao thành công
 driverRouter.patch('/orders/:orderId/complete', completeOrder);
+driverRouter.patch('/orders/:orderId/status', updateOrderStatus)
+
+// --- 3. THỐNG KÊ ---
+driverRouter.get('/stats', getDriverStats);
 
 export default driverRouter;

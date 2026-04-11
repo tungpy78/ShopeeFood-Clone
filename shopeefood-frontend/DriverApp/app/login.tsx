@@ -1,13 +1,13 @@
 import { ActivityIndicator, Alert, ImageBackground, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
-import bg from "../assets/images/phở.jpg";
+import bg from "../assets/images/Background Delivery.jpg";
 import { COLORS } from "./src/constants/theme";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { useState } from "react";
 import { useAuth } from "./src/context/AuthContext";
 import { AxiosError } from "axios";
-import { ApiErrorResponse } from "./src/types/api.types";
 import { AuthService } from "./src/services/auth.service";
+import { ApiErrorResponse } from "./src/types/api.types";
 
 export default function LoginScreen() {
     const [loading, setLoading] = useState(false);
@@ -25,11 +25,12 @@ export default function LoginScreen() {
         try {
             const res = await AuthService.login(phone, password);
             const userData = res.data.user
+            console.log("userData", res.data.user.status)
 
-            if(userData.role !== 2){
+            if(userData.role !== 3){
                 Alert.alert(
                     'Sai ứng dụng', 
-                    'Tài khoản này không phải là Khách hàng. Vui lòng dùng ứng dụng dành cho Chủ Quán/Tài Xế!'
+                    'Tài khoản này không phải là Tài Xế. Vui lòng dùng ứng dụng dành cho Chủ Quán/Khách Hàng!'
                 );
                 return; // Dừng lại ngay, không lưu token
             }
@@ -37,8 +38,8 @@ export default function LoginScreen() {
 
             await login(res.data.user, res.data.token);
 
-            if (router.canGoBack()) {
-                router.back(); // Quay lại trang trước (vd: Giỏ hàng)
+            if (res.data.user.status === "INCOMPLETE") {
+                router.replace('/setup-profile');
             } else {
                 router.replace('/'); // Trở về trang chủ
             }

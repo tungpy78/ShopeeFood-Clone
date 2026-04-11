@@ -24,6 +24,18 @@ class SocketService {
                 console.log(`User ${socket.id} joined room: ${roomName}`);
             });
 
+            socket.on('driver_online', (driverId) => {
+                socket.join('drivers_room'); // Lệnh quan trọng nhất: Nhét vào phòng!
+                console.log(`Tài xế ID ${driverId} đã vào phòng chờ nhận đơn (drivers_room)`);
+            });
+
+            socket.on('driver_busy', () => {
+                socket.leave('drivers_room'); // Đi giao hàng rồi, ra khỏi phòng hóng đơn!
+            });
+            socket.on('driver_free', () => {
+                socket.join('drivers_room'); // Giao xong, quay lại phòng hóng đơn!
+            });
+
             socket.on("disconnect", () => {
                 console.log(`Client disconnected: ${socket.id}`);
             });

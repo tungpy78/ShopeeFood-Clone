@@ -189,36 +189,6 @@ export const updateOrderStatus = async (req: Request, res: Response, next: NextF
         const { status } = req.body; // Status mới: CONFIRMED, PREPARING...
 
         const result = await MerchantService.updateOrderStatus(user.id, Number(orderId), status);
-
-        // --- BẮT ĐẦU SỬA TỪ ĐÂY ---
-        // Lấy io từ socketService thay vì req.io
-        try {
-            const io = socketService.getIO();
-
-            // TRƯỜNG HỢP A: Quán bấm "Tìm tài xế" -> Báo cho Tài xế
-            if (status === 'FINDING_DRIVER') {
-                io.to('drivers_room').emit('job_available', {
-                    message: '📢 Có đơn hàng mới cần giao!',
-                    order_id: result.id,
-                    earnings: '15.000đ' // Ví dụ phí ship
-                });
-                console.log("⚡ Đã bắn tin cho hội tài xế!");
-            }
-
-            // TRƯỜNG HỢP B: Báo cho Khách hàng biết tiến độ (Dù là status nào cũng báo)
-            // Khách hàng sẽ ở phòng: customer_{ID_KHÁCH}
-            const customerRoom = `customer_${result.customer_id}`;
-            io.to(customerRoom).emit('order_status_update', {
-                message: `Đơn hàng #${result.id} đã chuyển sang: ${status}`,
-                status: status,
-                order: result
-            });
-            console.log(`Đã bắn thông báo tiến độ cho khách: ${customerRoom}`);
-            
-        } catch (socketError) {
-            console.error("Lỗi khi gửi socket:", socketError);
-        }
-        // --- KẾT THÚC SỬA ---
         
         return AppResponse.success(res, result, 'Cập nhật trạng thái thành công!', 200);
     } catch (error) {
