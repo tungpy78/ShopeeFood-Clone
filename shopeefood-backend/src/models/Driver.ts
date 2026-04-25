@@ -60,7 +60,7 @@ Driver.init({
     allowNull: true
   },
   wallet_balance: {
-    type: DataTypes.DECIMAL(10, 2),
+    type: DataTypes.DECIMAL(12, 2),
     defaultValue: 0
   },
   status: {

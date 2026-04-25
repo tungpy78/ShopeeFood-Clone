@@ -6,8 +6,8 @@ class Order extends Model{
     declare customer_id: number;
     declare merchant_id: number;
     declare driver_id: number;
-    declare tolal_price: number;
-    declare shipping_price: number;
+    declare total_price: number;
+    declare shipping_fee: number;
     declare final_price: number;
     declare shipping_address: string;
     declare payment_method: string;

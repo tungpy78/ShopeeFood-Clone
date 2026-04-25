@@ -3,6 +3,8 @@ import { sequelize } from "../../config/connectDB";
 import { Account, Category, Customer, Driver, Food, Merchant, Order, OrderDetail } from "../../models";
 import ApiError from "../../utils/ErrorClass";
 import { socketService } from "../../config/socket";
+import DriverTransaction from "../../models/DriverTransaction";
+import moment from "moment";
 
 
 class DriverService{
@@ -183,44 +185,44 @@ class DriverService{
     }
 
     // 5. THỐNG KÊ THU NHẬP CỦA TÀI XẾ
-    static async getDriverStats(driverId: number) {
-        const startOfToday = new Date();
-        startOfToday.setHours(0, 0, 0, 0);
-        const endOfToday = new Date();
-        endOfToday.setHours(23, 59, 59, 999);
+    static async getRevenueChart(driverId: number) {
+        const driver = await Driver.findOne({where: { account_id: driverId }});
+        if(!driver) throw new ApiError("Không tìm thấy tài xế",404);
 
-        // 1. Đếm số đơn hôm nay
-        const completedOrdersToday = await Order.count({
-            where: {
-                driver_id: driverId,
-                status: 'COMPLETED',
-                createdAt: { [Op.between]: [startOfToday, endOfToday] }
-            }
-        });
+        const chartData = [];
+        for(let i = 6; i>=0; i--){
+            const targetDate = moment().subtract(i, 'days');
 
-        // 2. Tính tổng tiền ship hôm nay bằng hàm SUM của Sequelize
-        const earningsToday = await Order.sum('shipping_fee', {
-            where: {
-                driver_id: driverId,
-                status: 'COMPLETED',
-                createdAt: { [Op.between]: [startOfToday, endOfToday] }
-            }
-        }) || 0; // Thêm || 0 để phòng trường hợp chưa có đơn nào thì trả về 0 thay vì null
+            const startOfDate = targetDate.startOf('day').toDate();
+            const endOfDate = targetDate.endOf('day').toDate();
 
-        // 3. Đếm tổng số đơn toàn thời gian
-        const totalOrdersAllTime = await Order.count({
-            where: { driver_id: driverId, status: 'COMPLETED' }
-        });
+            const dailyRevenue = await Order.sum('shipping_fee', {
+                where:{
+                    driver_id: driverId,
+                    status: "COMPLETED",
+                    createdAt: {[Op.between]: [startOfDate, endOfDate]}
+                }
+            }) || 0;
 
-        // 4. Tính tổng tiền ship toàn thời gian
-        const earningsAllTime = await Order.sum('shipping_fee', {
-            where: { driver_id: driverId, status: 'COMPLETED' }
-        }) || 0;
+            let dayLable = targetDate.format('DD/MM');
+            let dayName = "";
+            const dayOfWeek = targetDate.day();
+            if(dayOfWeek === 0) dayName = "CN";
+            else dayName = `T${dayOfWeek + 1}`;
 
-        return {
-            today: { orders: completedOrdersToday, earnings: Number(earningsToday) },
-            all_time: { orders: totalOrdersAllTime, earnings: Number(earningsAllTime) }
+            chartData.push({
+                label: `${dayLable}\n${dayName}`,
+                revenue: Number(dailyRevenue)
+            });
+        }
+
+        const totalWeekRevenue = chartData.reduce((sum, item) => sum + item.revenue, 0);
+
+        return{
+            total_revenue: totalWeekRevenue,
+            chart_data: chartData
         };
+
     }
 
     static async setupProfile(driverId: number, data: { 
@@ -278,11 +280,60 @@ class DriverService{
             throw new ApiError(`Tài xế không thể chuyển từ '${order.status}' sang '${newStatus}'`, 400);
         }
 
-        // 4. Cập nhật Database
-        order.status = newStatus;
-        await order.save();
+        if(newStatus === 'COMPLETED'){
+            const t = await sequelize.transaction();
 
-        // 5. BẮN SOCKET CHO KHÁCH HÀNG BIẾT TIẾN ĐỘ
+            try {
+                order.status = 'COMPLETED';
+                await order.save({transaction: t});
+
+                const currentDriver = await Driver.findOne({
+                    where:{account_id: accountId},
+                    transaction :t, lock: t.LOCK.UPDATE
+                });
+
+                if (!currentDriver) {
+                    throw new ApiError("Lỗi dữ liệu: Không tìm thấy ví tài xế!", 404);
+                }
+                
+
+                if(order.payment_method === 'CASH'){
+                    const amountToDeduct = Number(order.total_price);
+
+                    currentDriver.wallet_balance = Number(currentDriver?.wallet_balance) - amountToDeduct;
+                    await currentDriver?.save({transaction: t});
+
+                    await DriverTransaction.create({
+                        driver_id: currentDriver?.account_id,
+                        amount: -amountToDeduct,
+                        type: 'CASH_ORDER',
+                        description: `Trừ tiền thu hộ đơn #${order.id}`
+                    }, {transaction: t});
+                }else{
+                    const amountToAdd = Number(order.shipping_fee);
+
+                    currentDriver.wallet_balance = Number(currentDriver?.wallet_balance) + amountToAdd;
+
+                    await DriverTransaction.create({
+                        driver_id: currentDriver?.account_id,
+                        amount: amountToAdd,
+                        type: 'ONLINE_ORDER',
+                        description: `Cộng phí giao hàng đơn #${order.id}`
+                    }, {transaction: t});
+                }
+
+                await t.commit();
+
+            } catch (error) {
+                await t.rollback(); // Lỗi thì hoàn tác, không ai mất tiền
+                throw new ApiError("Lỗi hệ thống khi thanh toán đơn hàng", 500);
+            }
+        }else {
+            // Nếu chuyển sang trạng thái bình thường (PICKING, DELIVERING) thì lưu bình thường
+            order.status = newStatus;
+            await order.save();
+        }
+
         try {
             const io = socketService.getIO();
             const customerRoom = `customer_${order.customer_id}`;
@@ -302,5 +353,25 @@ class DriverService{
 
         return order;
     }
+
+    static async getWalletInfo(driverId: number) {
+        const driver = await Driver.findOne({ where: { account_id: driverId } });
+        if (!driver) throw new ApiError("Không tìm thấy tài xế", 404);
+
+        // Lấy 20 giao dịch gần nhất
+        const transactions = await DriverTransaction.findAll({
+            where: { driver_id: driverId },
+            order: [['createdAt', 'DESC']],
+            limit: 20
+        });
+
+        return {
+            balance: driver.wallet_balance,
+            transactions: transactions
+        };
+    }
+
 }
+
+
 export default DriverService;

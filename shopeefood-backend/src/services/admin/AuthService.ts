@@ -10,7 +10,6 @@ class AdminAuthService {
         const account = await Account.findOne({ where: { phone: data.phone } });
         if (!account) throw new ApiError('Số điện thoại hoặc mật khẩu không đúng!', 401);
         
-        // Bắt buộc Role = 1 mới được vào trang Admin
         if (account.role_id !== 1) throw new ApiError('CẢNH BÁO BẢO MẬT: Bạn không phải là Admin!', 403);
         if (!account.status) throw new ApiError('Tài khoản Admin đã bị khóa!', 403);
 

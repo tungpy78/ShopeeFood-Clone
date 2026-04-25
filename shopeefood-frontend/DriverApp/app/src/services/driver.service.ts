@@ -1,6 +1,8 @@
 import axiosClient from "./axiosClient";
 import { ApiResponse } from "../types/api.types";
 import { Order } from "../types/order.types";
+import { Wallet } from "../types/wallet.types";
+import { Revenue } from "../types/revenue.types";
 
 export const driverService = {
     // API Hoàn thiện hồ sơ
@@ -33,7 +35,10 @@ export const driverService = {
         // Gửi status mới lên cho Backend cập nhật
         return axiosClient.patch<any, ApiResponse<any>>(`/driver/orders/${orderId}/status`, { status });
     },
-    getDriverStats: () => {
-        return axiosClient.get<any, ApiResponse<any>>('/driver/stats');
-    }
+    getWalletInfo: () => {
+        return axiosClient.get<any, ApiResponse<Wallet>>('/driver/wallet');
+    },
+    getRevenueChart: () => {
+        return axiosClient.get<any, ApiResponse<Revenue>>('/driver/revenue/chart');
+    },
 };

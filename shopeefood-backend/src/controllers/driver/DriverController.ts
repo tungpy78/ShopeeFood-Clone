@@ -58,10 +58,10 @@ export const getActiveOrder = async (req: Request, res: Response, next: NextFunc
     } catch (error) { next(error); }
 };
 
-export const getDriverStats = async (req: Request, res: Response, next: NextFunction) => {
+export const getRevenueChart = async (req: Request, res: Response, next: NextFunction) => {
     try {
         if (!req.user) return AppResponse.error(res, 'Unauthorized', 401);
-        const result = await DriverService.getDriverStats(req.user.id);
+        const result = await DriverService.getRevenueChart(req.user.id);
         return AppResponse.success(res, result, 'Lấy thống kê thành công');
     } catch (error) { next(error); }
 };
@@ -88,6 +88,16 @@ export const updateOrderStatus = async (req: Request, res: Response, next: NextF
         
         return AppResponse.success(res, result, 'Cập nhật tiến độ thành công!', 200);
 
+    } catch (error) {
+        next(error)
+    }
+}
+export const getWalletInfo = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const user = req.user
+        if(!user) return AppResponse.error(res, 'Unauthorized', 401);
+        const result = await DriverService.getWalletInfo(user.id);
+        return AppResponse.success(res, result, 'Lấy thông tin ví thành công!', 200);
     } catch (error) {
         next(error)
     }

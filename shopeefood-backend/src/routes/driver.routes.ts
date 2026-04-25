@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { acceptOrder, completeOrder, getActiveOrder, getAvailableOrders, getDriverProfile, getDriverStats, setupProfile, toggleStatus, updateOrderStatus } from '../controllers/driver/DriverController';
+import { acceptOrder, completeOrder, getActiveOrder, getAvailableOrders, getDriverProfile, getRevenueChart, getWalletInfo, setupProfile, toggleStatus, updateOrderStatus } from '../controllers/driver/DriverController';
 
 const driverRouter = Router();
 
@@ -16,6 +16,7 @@ driverRouter.patch('/orders/:orderId/complete', completeOrder);
 driverRouter.patch('/orders/:orderId/status', updateOrderStatus)
 
 // --- 3. THỐNG KÊ ---
-driverRouter.get('/stats', getDriverStats);
+driverRouter.get('/revenue/chart', getRevenueChart);
+driverRouter.get('/wallet', getWalletInfo);
 
 export default driverRouter;

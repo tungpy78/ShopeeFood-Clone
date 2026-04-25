@@ -10,6 +10,7 @@ import FoodOptionGroup from './FoodOptionGroup';
 import OptionGroup from './OptionGroup';
 import Option from './Option';
 import Driver from './Driver';
+import DriverTransaction from './DriverTransaction';
 
 // --- ĐỊNH NGHĨA MỐI QUAN HỆ ---
 
@@ -86,6 +87,8 @@ Driver.belongsTo(Account, { foreignKey: 'account_id', as: 'account' });
 // 2. Driver - Order (Một tài xế giao nhiều đơn)
 Driver.hasMany(Order, { foreignKey: 'driver_id', as: 'shipped_orders' });
 Order.belongsTo(Driver, { foreignKey: 'driver_id', as: 'driver_info' });
+
+Driver.hasMany(DriverTransaction, { foreignKey: 'driver_id' });
 
 // Xuất ra để dùng ở chỗ khác
 export { Role, Account, Customer, Merchant, Category, Food, Order, OrderDetail, FoodOptionGroup, OptionGroup, Option, Driver };

@@ -83,8 +83,16 @@ export default function DrawerLayout() {
             <Drawer.Screen
                 name="wallet" // Trỏ vào file app/(drawer)/wallet.tsx
                 options={{
-                    drawerLabel: 'Thu nhập & Ví',
+                    drawerLabel: 'Ví',
                     drawerIcon: ({ color }) => <Ionicons name="wallet-outline" size={24} color={color} 
+                    style={{marginRight:10}}/>,
+                }}
+            />
+            <Drawer.Screen
+                name="revenue" // Trỏ vào file app/(drawer)/wallet.tsx
+                options={{
+                    drawerLabel: 'Thu nhập',
+                    drawerIcon: ({ color }) => <Ionicons name="cash-outline" size={24} color={color} 
                     style={{marginRight:10}}/>,
                 }}
             />
